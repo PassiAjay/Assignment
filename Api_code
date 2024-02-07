@@ -1,0 +1,45 @@
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class BadgeAPITest {
+
+    private static final String BASE_URL = "https://api.stackexchange.com/2.3";
+    private static final String API_KEY = "5mlqPtTGNluiNb0mF1BXQg((";
+    @BeforeAll
+    public static void setUp() {
+        RestAssured.baseURI = BASE_URL;
+    }
+
+    @Test
+    public void testBadgesEndpoint() {
+        Response response = RestAssured.given().queryParam("key", API_KEY).get("/badges");
+        assertEquals(200, response.getStatusCode());
+        assertNotNull(response.jsonPath().getList("items"));
+    }
+
+    @Test
+    public void testBadgesByIdsEndpoint() {
+        int badgeId = 1; // Replace with actual badge ID
+        Response response = RestAssured.given().queryParam("key", API_KEY).get("/badges/" + badgeId);
+        assertEquals(200, response.getStatusCode());
+        assertEquals(badgeId, response.jsonPath().getInt("items[0].badge_id"));
+    }
+
+    @Test
+    public void testBadgeRecipientsEndpoint() {
+        int badgeId = 1; // Replace with actual badge ID
+        Response response = RestAssured.given().queryParam("key", API_KEY).get("/badges/" + badgeId + "/recipients");
+        assertEquals(200, response.getStatusCode());
+        assertNotNull(response.jsonPath().getList("items"));
+    }
+
+    @Test
+    public void testBadgeTagsEndpoint() {
+        Response response = RestAssured.given().queryParam("key", API_KEY).get("/badges/tags");
+        assertEquals(200, response.getStatusCode());
+        assertNotNull(response.jsonPath().getList("items"));
+    }
+}
