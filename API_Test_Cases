@@ -1,0 +1,59 @@
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DistanceCalculatorTest {
+
+    @Test
+    public void testCalculateDistance_PositiveCases() {
+        // Test with valid coordinates representing different distances
+        double distance1 = DistanceCalculator.calculateDistance(40.7128, -74.0060, 34.0522, -118.2437);
+        assertEquals(3946.0, distance1, 1.0); 
+        double distance2 = DistanceCalculator.calculateDistance(51.5074, -0.1278, 48.8566, 2.3522);
+        assertEquals(341.0, distance2, 1.0); 
+    }
+
+    @Test
+    public void testCalculateDistance_NegativeCases() {
+        // Test with invalid coordinates (out of range)
+        assertThrows(IllegalArgumentException.class, () -> {
+            DistanceCalculator.calculateDistance(91.0, -74.0060, 34.0522, -118.2437);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            DistanceCalculator.calculateDistance(40.7128, -181.0, 34.0522, -118.2437);
+        });
+
+        // Test with non-numeric coordinates
+        assertThrows(NumberFormatException.class, () -> {
+            DistanceCalculator.calculateDistance(Double.parseDouble("NaN"), -74.0060, 34.0522, -118.2437);
+        });
+
+        // Test with null or empty values
+        assertThrows(IllegalArgumentException.class, () -> {
+            DistanceCalculator.calculateDistance(null, -74.0060, 34.0522, -118.2437);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            DistanceCalculator.calculateDistance(40.7128, -74.0060, null, -118.2437);
+        });
+    }
+
+    @Test
+    public void testCalculateDistance_CornerCases() {
+        // Test with the same coordinates (identical locations)
+        double distance = DistanceCalculator.calculateDistance(40.7128, -74.0060, 40.7128, -74.0060);
+        assertEquals(0.0, distance, 0.01);
+
+        // Test with extreme latitude and longitude values
+        double distance1 = DistanceCalculator.calculateDistance(90.0, -180.0, -90.0, 180.0);
+        assertEquals(20036.0, distance1, 1.0); // Approximate circumference of the Earth in km
+
+        // Test with coordinates close to the poles
+        double distance2 = DistanceCalculator.calculateDistance(90.0, -74.0060, 89.0, -74.0060);
+        assertTrue(distance2 < 111.0); 
+
+        // Test with coordinates close to the International Date Line
+        double distance3 = DistanceCalculator.calculateDistance(40.7128, -180.0, 40.7128, 180.0);
+        assertTrue(distance3 < 1.0); 
+    }
+}
